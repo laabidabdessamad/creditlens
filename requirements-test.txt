@@ -1,0 +1,10 @@
+# What CI needs: API runtime + test/lint tooling (no heavy training libraries).
+-r requirements-api.txt
+pytest==9.1.1
+httpx==0.28.1
+ruff==0.16.8
+pandera==0.33.1
+imbalanced-learn==0.14.2
+streamlit==1.64.0
+requests==2.34.2
+matplotlib==3.11.2

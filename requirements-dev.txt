@@ -1,0 +1,13 @@
+# Full development environment: training, tuning, tracking, explainability, fairness, monitoring.
+-r requirements-test.txt
+optuna==5.0.0
+mlflow==3.16.1
+shap==0.52.0
+fairlearn==0.14.0
+evidently==0.7.23
+dvc==3.67.1
+seaborn==0.13.2
+nbformat==5.11.1
+nbconvert==7.17.1
+ipykernel==7.3.0
+pre-commit==4.6.2

@@ -1,0 +1,21 @@
+# Single source of truth for pipeline parameters (read by src/creditlens/*, tracked by DVC).
+seed: 42
+test_size: 0.2
+cv_folds: 5
+cv_repeats: 2
+
+# Business assumption (UCI German Credit cost matrix): approving a loan that defaults
+# is 5x worse than declining a loan that would have been repaid.
+cost:
+  false_negative: 5   # approve a "bad" applicant
+  false_positive: 1   # decline a "good" applicant
+
+# Optuna trials per model family
+tuning:
+  logistic_regression: 25
+  random_forest: 20
+  xgboost: 40
+
+# Protected/sensitive attributes that may be used as model inputs (subset of: sex, age).
+# Decided by the fairness audit (see reports/fairness_audit.md).
+sensitive_features_in_model: []

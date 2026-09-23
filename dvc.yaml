@@ -1,0 +1,106 @@
+# Reproducible pipeline:  dvc repro     (visualise: dvc dag)
+# Small artifacts that the deployment needs (model, metrics, figures) use `cache: false`
+# so they stay tracked by git and CI/Docker can use them without a DVC remote.
+stages:
+  prepare:
+    desc: Validate the raw data against the Pandera contract and write a clean copy
+    cmd: python -m creditlens.data
+    deps:
+      - data/raw/german_credit_data.csv
+      - src/creditlens/data.py
+      - src/creditlens/schema.py
+      - src/creditlens/config.py
+    outs:
+      - data/processed/clean.csv
+
+  train:
+    desc: Optuna tuning (LR / RF / XGBoost), calibration, cost-optimal threshold, one test evaluation
+    cmd: python -m creditlens.train
+    deps:
+      - data/processed/clean.csv   # ordering: validation must pass before training
+      - data/raw/german_credit_data.csv
+      - src/creditlens
+    params:
+      - seed
+      - test_size
+      - cv_folds
+      - cv_repeats
+      - cost
+      - tuning
+      - sensitive_features_in_model
+    outs:
+      - models/credit_model.joblib:
+          cache: false
+      - reports/model_comparison.csv:
+          cache: false
+      - reports/oof_train.csv:
+          cache: false
+      - reports/test_predictions.csv:
+          cache: false
+      - reports/figures/00_optuna_history.png:
+          cache: false
+    metrics:
+      - reports/metrics.json:
+          cache: false
+
+  evaluate:
+    desc: Evaluation figures (ROC/PR, cost curve, calibration, confusion matrix, comparison)
+    cmd: python -m creditlens.evaluation
+    deps:
+      - src/creditlens/evaluation.py
+      - reports/metrics.json
+      - reports/oof_train.csv
+      - reports/test_predictions.csv
+      - reports/model_comparison.csv
+    outs:
+      - reports/figures/01_roc_pr.png:
+          cache: false
+      - reports/figures/02_cost_vs_threshold.png:
+          cache: false
+      - reports/figures/03_calibration.png:
+          cache: false
+      - reports/figures/04_confusion_matrix.png:
+          cache: false
+      - reports/figures/05_model_comparison.png:
+          cache: false
+
+  explain:
+    desc: SHAP global/local explanations + check that API-native contributions equal SHAP
+    cmd: python -m creditlens.explain
+    deps:
+      - src/creditlens/explain.py
+      - models/credit_model.joblib
+    outs:
+      - reports/figures/06_shap_summary.png:
+          cache: false
+      - reports/figures/07_global_importance.png:
+          cache: false
+      - reports/figures/08_local_explanations.png:
+          cache: false
+    metrics:
+      - reports/explainability.json:
+          cache: false
+
+  fairness:
+    desc: Fairlearn audit of sex/age inclusion variants
+    cmd: python -m creditlens.fairness
+    deps:
+      - src/creditlens/fairness.py
+      - models/credit_model.joblib
+    outs:
+      - reports/fairness_audit.csv:
+          cache: false
+      - reports/fairness_groups.csv:
+          cache: false
+      - reports/figures/09_fairness_groups.png:
+          cache: false
+
+  monitor:
+    desc: Evidently drift reports (stable vs simulated downturn)
+    cmd: python -m creditlens.monitoring
+    deps:
+      - src/creditlens/monitoring.py
+      - models/credit_model.joblib
+    outs:
+      - reports/monitoring:
+          cache: false

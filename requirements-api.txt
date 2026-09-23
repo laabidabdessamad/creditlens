@@ -1,0 +1,12 @@
+# Runtime dependencies of the FastAPI service (Docker image). Exact pins: the pickled model must be
+# loaded with the same library versions it was trained with. Python 3.12.
+fastapi==0.141.1
+uvicorn==0.53.0
+pydantic==2.13.5
+numpy==2.5.3
+pandas==3.0.6
+scipy==1.18.1
+scikit-learn==1.9.1
+xgboost==3.4.1
+joblib==1.6.0
+PyYAML==6.0.3

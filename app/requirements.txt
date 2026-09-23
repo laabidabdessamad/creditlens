@@ -1,0 +1,5 @@
+# Streamlit Community Cloud installs this file (app is a thin client of the API).
+streamlit==1.64.0
+requests==2.34.2
+pandas==3.0.6
+matplotlib==3.11.2

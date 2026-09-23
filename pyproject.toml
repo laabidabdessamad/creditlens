@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "creditlens"
+version = "1.0.0"
+description = "Cost-sensitive, explainable and fairness-audited credit risk scoring (German Credit)."
+readme = "README.md"
+requires-python = ">=3.12"
+# Runtime/dev dependencies are pinned in the requirements-*.txt files so that the
+# pickled model is always loaded with the exact library versions it was trained with.
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = [".venv", "mlruns", "mlartifacts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "N"]
+ignore = ["N803", "N806", "N812", "E501"]  # sklearn naming (X), `cost as C`; formatter owns line length
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]
+"notebooks/*" = ["E402"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning"]
+pythonpath = ["."]
