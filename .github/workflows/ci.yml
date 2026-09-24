@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+          cache: pip
+          cache-dependency-path: requirements-*.txt
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-test.txt
+          pip install --no-deps -e .
+
+      - name: Lint (ruff)
+        run: |
+          ruff check .
+          ruff format --check .
+
+      - name: Tests (pytest)
+        run: pytest
+
+  docker-build:
+    # Verifies the image builds and the container serves /health; nothing is pushed here.
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: lint-and-test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t creditlens-api:ci .
+      - name: Smoke-test container
+        run: |
+          docker run -d --name api -p 10000:10000 creditlens-api:ci
+          for i in $(seq 1 30); do
+            curl -fs http://localhost:10000/health && exit 0
+            sleep 2
+          done
+          docker logs api
+          exit 1

@@ -1,0 +1,40 @@
+{
+  "champion": "xgboost",
+  "test": {
+    "n_test": 200,
+    "bad_rate": 0.3,
+    "threshold": 0.13,
+    "roc_auc": 0.7620238095238095,
+    "roc_auc_ci95": [
+      0.6835047154281964,
+      0.8325897609271811
+    ],
+    "pr_auc": 0.6205627716393927,
+    "brier_raw": 0.1942146271467209,
+    "brier_calibrated": 0.1678552703753223,
+    "expected_cost": 0.645,
+    "expected_cost_ci95": [
+      0.519875,
+      0.78
+    ],
+    "cost_approve_all": 1.5,
+    "cost_decline_all": 0.7,
+    "cost_at_threshold_0.5": 0.83,
+    "saving_vs_decline_all": 0.05499999999999994,
+    "saving_vs_decline_all_ci95": [
+      -0.09512499999999996,
+      0.19000000000000006
+    ],
+    "confusion": {
+      "tn": 46,
+      "fp": 94,
+      "fn": 7,
+      "tp": 53
+    },
+    "recall_bad": 0.8833333333333333,
+    "precision_bad": 0.36054421768707484,
+    "approval_rate": 0.265
+  },
+  "train_oof_cost": 0.56,
+  "cv_roc_auc": 0.7743582589285715
+}

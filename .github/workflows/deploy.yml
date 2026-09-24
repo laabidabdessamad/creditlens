@@ -1,0 +1,75 @@
+name: Deploy API
+
+# Runs only after CI succeeded on main:
+#   build image -> push to Docker Hub -> tell Render to deploy that exact image -> smoke test
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/creditlens-api
+      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      RENDER_API_URL: ${{ vars.RENDER_API_URL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.event.workflow_run.head_sha || github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Skipped on the very first run, before the Render service exists (see docs/DEPLOYMENT.md)
+      # - name: Trigger Render deploy (pins the exact image tag)
+      #   if: ${{ env.RENDER_DEPLOY_HOOK_URL != '' }}
+      #   run: |
+      #     SHA="${{ github.event.workflow_run.head_sha || github.sha }}"
+      #     IMG=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "docker.io/${IMAGE}:${SHA}")
+      #     curl -fsS -X POST "${RENDER_DEPLOY_HOOK_URL}&imgURL=${IMG}"
+
+      - name: Smoke test the live API
+        if: ${{ env.RENDER_DEPLOY_HOOK_URL != '' && env.RENDER_API_URL != '' }}
+        run: |
+          URL="${RENDER_API_URL}"
+          # Render free tier + a fresh deploy can take a few minutes to become healthy
+          for i in $(seq 1 40); do
+            if curl -fsS "$URL/health"; then
+              echo; curl -fsS -X POST "$URL/predict" -H 'content-type: application/json' \
+                -d '{"job":2,"housing":"own","credit_amount":1500,"duration":10,"purpose":"radio/TV"}'
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "API did not become healthy in time"; exit 1

@@ -12,4 +12,4 @@ mlflow.db
 build/
 dist/
 .DS_Store
-cmd_outputs.txt
+cmd_outputs*

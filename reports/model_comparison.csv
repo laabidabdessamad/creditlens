@@ -1,0 +1,5 @@
+model,cv_roc_auc,cv_roc_auc_std,oof_pr_auc,oof_brier,oof_min_cost,imbalance,best_params
+dummy_prior,0.5,0.0,0.3,0.20999999999999996,0.7,-,{}
+logistic_regression,0.7520833333333333,0.04646440364558839,0.5533347799645458,0.17633116539169136,0.5775,none,"{""imbalance"": ""none"", ""C"": 0.08496717096770293}"
+random_forest,0.7677920386904762,0.04293318466184637,0.5585609537667153,0.19888735871781626,0.56375,class_weight,"{""imbalance"": ""class_weight"", ""n_estimators"": 100, ""max_depth"": 5, ""min_samples_leaf"": 5, ""max_features"": ""log2""}"
+xgboost,0.7743582589285715,0.04087910400328775,0.5579877841817593,0.19064338505268097,0.5575,class_weight,"{""imbalance"": ""class_weight"", ""n_estimators"": 250, ""max_depth"": 2, ""learning_rate"": 0.038499680445419196, ""subsample"": 0.6087373569147495, ""colsample_bytree"": 0.7911086342133082, ""min_child_weight"": 7, ""reg_lambda"": 1.9569949141740322}"

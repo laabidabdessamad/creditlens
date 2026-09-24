@@ -1,0 +1,194 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python -m creditlens.data
+    deps:
+    - path: data/raw/german_credit_data.csv
+      hash: md5
+      md5: 3086216ff1ff32f7626554e730cccc91
+      size: 53393
+    - path: src/creditlens/config.py
+      hash: md5
+      md5: cbc789af5188a9b4c5ece9ae6003b396
+      size: 2398
+    - path: src/creditlens/data.py
+      hash: md5
+      md5: e51ba910124c3d0abaacfa11e6b4695f
+      size: 2441
+    - path: src/creditlens/schema.py
+      hash: md5
+      md5: 180b728441a3bef6e4fbabbbbb6eab42
+      size: 1354
+    outs:
+    - path: data/processed/clean.csv
+      hash: md5
+      md5: 04c8b4e9c2434f265fb44d8bea9bef74
+      size: 49349
+  train:
+    cmd: python -m creditlens.train
+    deps:
+    - path: data/processed/clean.csv
+      hash: md5
+      md5: 04c8b4e9c2434f265fb44d8bea9bef74
+      size: 49349
+    - path: data/raw/german_credit_data.csv
+      hash: md5
+      md5: 3086216ff1ff32f7626554e730cccc91
+      size: 53393
+    - path: src/creditlens
+      hash: md5
+      md5: 226fa6385deee6293ca646a099b8e012.dir
+      size: 53980
+      nfiles: 13
+    params:
+      params.yaml:
+        cost:
+          false_negative: 5
+          false_positive: 1
+        cv_folds: 5
+        cv_repeats: 2
+        seed: 42
+        sensitive_features_in_model: []
+        test_size: 0.2
+        tuning:
+          logistic_regression: 25
+          random_forest: 20
+          xgboost: 40
+    outs:
+    - path: models/credit_model.joblib
+      hash: md5
+      md5: 0d4055ce7cca1585aa4b813e79b969c9
+      size: 35401
+    - path: reports/figures/00_optuna_history.png
+      hash: md5
+      md5: 09a5ad23c0f9641ef1aec9b26ec9fb58
+      size: 41468
+    - path: reports/metrics.json
+      hash: md5
+      md5: 90c90d6b178f66bcc310cf4d8d7a2513
+      size: 963
+    - path: reports/model_comparison.csv
+      hash: md5
+      md5: 1caf32f7e465bbe748700b34eb1fc7a7
+      size: 917
+    - path: reports/oof_train.csv
+      hash: md5
+      md5: 9fde7ae74946c7a79aa08d06c18b88ca
+      size: 26484
+    - path: reports/test_predictions.csv
+      hash: md5
+      md5: 50d081737aee7e0939276c8ddb88308e
+      size: 8364
+  evaluate:
+    cmd: python -m creditlens.evaluation
+    deps:
+    - path: reports/metrics.json
+      hash: md5
+      md5: 90c90d6b178f66bcc310cf4d8d7a2513
+      size: 963
+    - path: reports/model_comparison.csv
+      hash: md5
+      md5: 1caf32f7e465bbe748700b34eb1fc7a7
+      size: 917
+    - path: reports/oof_train.csv
+      hash: md5
+      md5: 9fde7ae74946c7a79aa08d06c18b88ca
+      size: 26484
+    - path: reports/test_predictions.csv
+      hash: md5
+      md5: 50d081737aee7e0939276c8ddb88308e
+      size: 8364
+    - path: src/creditlens/evaluation.py
+      hash: md5
+      md5: c747bc9d794df594e5263f0e688a2b65
+      size: 7250
+    outs:
+    - path: reports/figures/01_roc_pr.png
+      hash: md5
+      md5: f83f890b43c25d544c82c91ba93bdc76
+      size: 72310
+    - path: reports/figures/02_cost_vs_threshold.png
+      hash: md5
+      md5: 4baa24c9826cf188a59e4d14b621d7e1
+      size: 67364
+    - path: reports/figures/03_calibration.png
+      hash: md5
+      md5: 5e46996012f2afcab8cd027623a3291a
+      size: 52232
+    - path: reports/figures/04_confusion_matrix.png
+      hash: md5
+      md5: 07e3bf7abd78181b60d89e55531440f0
+      size: 23119
+    - path: reports/figures/05_model_comparison.png
+      hash: md5
+      md5: 66f3809d0eaef063af6a2462e388c523
+      size: 30787
+  explain:
+    cmd: python -m creditlens.explain
+    deps:
+    - path: models/credit_model.joblib
+      hash: md5
+      md5: 0d4055ce7cca1585aa4b813e79b969c9
+      size: 35401
+    - path: src/creditlens/explain.py
+      hash: md5
+      md5: 9bcc1fabec3171d08b7febc9a8dc4bda
+      size: 4073
+    outs:
+    - path: reports/explainability.json
+      hash: md5
+      md5: 42f6f74974bf35dba911a29894dc8947
+      size: 397
+    - path: reports/figures/06_shap_summary.png
+      hash: md5
+      md5: 1780db416e43991240ada599eca2a2a3
+      size: 123623
+    - path: reports/figures/07_global_importance.png
+      hash: md5
+      md5: a4e4a0ebaa0073f4f54149af65a6bf2d
+      size: 37828
+    - path: reports/figures/08_local_explanations.png
+      hash: md5
+      md5: b5bfb1ee4e7909290698e68ad4e471b7
+      size: 60265
+  fairness:
+    cmd: python -m creditlens.fairness
+    deps:
+    - path: models/credit_model.joblib
+      hash: md5
+      md5: 0d4055ce7cca1585aa4b813e79b969c9
+      size: 35401
+    - path: src/creditlens/fairness.py
+      hash: md5
+      md5: 6b30346d6186e3b25d986e897b1b2fb2
+      size: 6079
+    outs:
+    - path: reports/fairness_audit.csv
+      hash: md5
+      md5: 3955b615cf753e9e27b9cf5e408c5a1d
+      size: 640
+    - path: reports/fairness_groups.csv
+      hash: md5
+      md5: 129ad8b47865fc53741dc92eb5ae9b55
+      size: 1529
+    - path: reports/figures/09_fairness_groups.png
+      hash: md5
+      md5: e8b89ea5c404de02897bb45d0310fe1e
+      size: 36063
+  monitor:
+    cmd: python -m creditlens.monitoring
+    deps:
+    - path: models/credit_model.joblib
+      hash: md5
+      md5: 0d4055ce7cca1585aa4b813e79b969c9
+      size: 35401
+    - path: src/creditlens/monitoring.py
+      hash: md5
+      md5: 96024f9bcb9ba76c98ba06c0aba3b3be
+      size: 4459
+    outs:
+    - path: reports/monitoring
+      hash: md5
+      md5: 0efea696d1fd1b106f77bde536678cf7.dir
+      size: 7910960
+      nfiles: 3

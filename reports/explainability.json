@@ -1,0 +1,13 @@
+{
+  "native_vs_shap_max_abs_diff": 0.0,
+  "global_importance": {
+    "checking_account": 0.6708550410903991,
+    "duration": 0.371147579587996,
+    "monthly_payment": 0.2956312968488783,
+    "log_credit_amount": 0.2822485330794007,
+    "saving_accounts": 0.24940687147900462,
+    "housing": 0.18109438020852395,
+    "purpose": 0.16579786265385338,
+    "job": 0.018955715763149784
+  }
+}

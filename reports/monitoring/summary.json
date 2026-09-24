@@ -1,0 +1,120 @@
+{
+  "stable": {
+    "n_columns": 8,
+    "n_drifted": 1,
+    "share_drifted": 0.125,
+    "columns": [
+      {
+        "column": "job",
+        "score": 0.4963,
+        "drift": false,
+        "test": "chi-square p_value"
+      },
+      {
+        "column": "credit_amount",
+        "score": 0.7581,
+        "drift": false,
+        "test": "K-S p_value"
+      },
+      {
+        "column": "duration",
+        "score": 0.9746,
+        "drift": false,
+        "test": "K-S p_value"
+      },
+      {
+        "column": "predicted_risk",
+        "score": 0.9818,
+        "drift": false,
+        "test": "K-S p_value"
+      },
+      {
+        "column": "housing",
+        "score": 0.9796,
+        "drift": false,
+        "test": "chi-square p_value"
+      },
+      {
+        "column": "saving_accounts",
+        "score": 0.1968,
+        "drift": false,
+        "test": "chi-square p_value"
+      },
+      {
+        "column": "checking_account",
+        "score": 0.9918,
+        "drift": false,
+        "test": "chi-square p_value"
+      },
+      {
+        "column": "purpose",
+        "score": 0.0077,
+        "drift": true,
+        "test": "chi-square p_value"
+      }
+    ],
+    "mean_predicted_risk": 0.3066,
+    "decline_rate": 0.735
+  },
+  "shifted": {
+    "n_columns": 8,
+    "n_drifted": 5,
+    "share_drifted": 0.625,
+    "columns": [
+      {
+        "column": "job",
+        "score": 0.4963,
+        "drift": false,
+        "test": "chi-square p_value"
+      },
+      {
+        "column": "credit_amount",
+        "score": 0.0,
+        "drift": true,
+        "test": "K-S p_value"
+      },
+      {
+        "column": "duration",
+        "score": 0.0,
+        "drift": true,
+        "test": "K-S p_value"
+      },
+      {
+        "column": "predicted_risk",
+        "score": 0.0127,
+        "drift": true,
+        "test": "K-S p_value"
+      },
+      {
+        "column": "housing",
+        "score": 0.9796,
+        "drift": false,
+        "test": "chi-square p_value"
+      },
+      {
+        "column": "saving_accounts",
+        "score": 0.1968,
+        "drift": false,
+        "test": "chi-square p_value"
+      },
+      {
+        "column": "checking_account",
+        "score": 0.0,
+        "drift": true,
+        "test": "chi-square p_value"
+      },
+      {
+        "column": "purpose",
+        "score": 0.0,
+        "drift": true,
+        "test": "chi-square p_value"
+      }
+    ],
+    "mean_predicted_risk": 0.334,
+    "decline_rate": 0.82
+  },
+  "reference": {
+    "mean_predicted_risk": 0.3015,
+    "decline_rate": 0.73
+  }
+}
