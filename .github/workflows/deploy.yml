@@ -52,12 +52,12 @@ jobs:
           cache-to: type=gha,mode=max
 
       # Skipped on the very first run, before the Render service exists (see docs/DEPLOYMENT.md)
-      # - name: Trigger Render deploy (pins the exact image tag)
-      #   if: ${{ env.RENDER_DEPLOY_HOOK_URL != '' }}
-      #   run: |
-      #     SHA="${{ github.event.workflow_run.head_sha || github.sha }}"
-      #     IMG=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "docker.io/${IMAGE}:${SHA}")
-      #     curl -fsS -X POST "${RENDER_DEPLOY_HOOK_URL}&imgURL=${IMG}"
+      - name: Trigger Render deploy (pins the exact image tag)
+        if: ${{ env.RENDER_DEPLOY_HOOK_URL != '' }}
+        run: |
+          SHA="${{ github.event.workflow_run.head_sha || github.sha }}"
+          IMG=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "docker.io/${IMAGE}:${SHA}")
+          curl -fsS -X POST "${RENDER_DEPLOY_HOOK_URL}&imgURL=${IMG}"
 
       - name: Smoke test the live API
         if: ${{ env.RENDER_DEPLOY_HOOK_URL != '' && env.RENDER_API_URL != '' }}

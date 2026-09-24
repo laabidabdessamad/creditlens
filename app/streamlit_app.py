@@ -14,7 +14,7 @@ import pandas as pd
 import requests
 import streamlit as st
 
-DEFAULT_API = "https://creditlens-api.onrender.com"
+DEFAULT_API = "https://creditlens-api-trw8.onrender.com"
 ROOT = Path(__file__).resolve().parent.parent
 FIGURES = ROOT / "reports" / "figures"
 
